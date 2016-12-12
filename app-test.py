@@ -1,5 +1,7 @@
 from app import app
 import unittest
+import os
+import tempfile
 
 class BasicTestCase(unittest.TestCase):
 
@@ -14,6 +16,22 @@ class BasicTestCase(unittest.TestCase):
         tester = os.path.exists("flaskr.db")
         self.assertTrue(tester)
 
+
+class FlaskrTestCase(unittest.TestCase):
+
+    def setUp(self):
+        """ Setup a blank temp database before each test """
+        self.db_fd, app.app.config['DATABASE'] = tempfile.mkstemp()
+        app.app.config['TESTING'] = True
+        self.app = app.app.test_client()
+        app.init_db()
+
+    def tearDown(self):
+        """Destroy blank temp db after each test"""
+        os.close(self.db_fd)
+        os.unlink(app.app.config['DATABASE'])
+    
+    def login(
 
 
 if __name__ == '__main__':
